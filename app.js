@@ -24,16 +24,27 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Consulta la API par aobtener un listado de Criptomonedas
-function consultarCriptomonedas() {
+// implementando async await
+async function consultarCriptomonedas() {
 
     // Ir  AtoPLISTS Y Despues market capp 
     const url = 'https://min-api.cryptocompare.com/data/top/mktcapfull?limit=10&tsym=USD';
 
-    fetch(url)
-        .then( respuesta => respuesta.json()) // Consulta exitosa...
-        .then( resultado => obtenerCriptomonedas(resultado.Data)) // 
-        .then( criptomonedas  =>  selectCriptomonedas(criptomonedas) )
-        .catch( error => console.log(error));
+    // fetch(url)
+    //     .then( respuesta => respuesta.json()) // Consulta exitosa...
+    //     .then( resultado => obtenerCriptomonedas(resultado.Data)) // 
+    //     .then( criptomonedas  =>  selectCriptomonedas(criptomonedas) )
+    //     .catch( error => console.log(error));
+
+    try {
+        const resultado = await fetch(url);
+        const respuesta = await resultado.json();
+        const criptomonedas = await obtenerCriptomonedas(respuesta.Data)
+        selectCriptomonedas(criptomonedas)
+        
+    } catch (error) {
+        console.log(error);
+    }
 }
 // llena el select 
 function selectCriptomonedas(criptomonedas) {
@@ -84,19 +95,26 @@ function mostrarAlerta(mensaje) {
         }, 3000);
 }
 
-
-function consultarAPI() {
+//implementando async await
+async function consultarAPI() {
     const {moneda, criptomoneda} = objBusqueda;
 
     const url = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${criptomoneda}&tsyms=${moneda}`;
 
     mostrarSpinner();
 
-    fetch(url)  
-        .then(respuesta => respuesta.json())
-        .then(cotizacion => {
-            mostrarCotizacionHTML(cotizacion.DISPLAY[criptomoneda][moneda]);
-        });
+    // fetch(url)  
+    //     .then(respuesta => respuesta.json())
+    //     .then(cotizacion => {
+    //         mostrarCotizacionHTML(cotizacion.DISPLAY[criptomoneda][moneda]);
+    //     });
+    try {
+        const respuesta = await fetch(url);
+        const resultado = await respuesta.json();
+        mostrarCotizacionHTML(resultado.DISPLAY[criptomoneda][moneda])
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 function mostrarCotizacionHTML(cotizacion) {
